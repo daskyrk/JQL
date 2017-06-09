@@ -1,22 +1,20 @@
 import _ from 'lodash';
 import chain from './core';
 
-
 const div = document.querySelector('#output');
 const output = (...args) => {
   console.log(...args);
   let str = div.innerHTML;
-  args.forEach(arg=>{
+  args.forEach(arg => {
     if (typeof arg === 'string') {
       str += `<h3>${arg}</h3>`;
-    }else {
+    } else {
       str += JSON.stringify(arg);
     }
     str += '<br/>';
-  })
+  });
   div.innerHTML = str;
-}
-
+};
 
 function update(...args) {
   const chainCopy = { ...chain };
@@ -32,16 +30,77 @@ export default (() => {
     params: {
       id: 1,
       name: 'hhh',
-      age: 12,
+      age: 12
     },
     args: {
       proId: 22,
       region: 'a-b-c',
-      arr: [2, 3],
-    },
+      arr: [2, 3]
+    }
   };
-  const runtimes = [{ id: 555, runtimeList: [{ id: 12, name: 'wtf' }, { id: 13, name: 'qwe' }, { id: 14, name: 'asd' }] }, { id: 666, runtimeList: [{ id: 22, name: 'wtf2' }, { id: 23, name: 'qwe2' }, { id: 24, name: 'asd2' }] }];
-  const statusMap = { zookeeper: [{ id: 'open-source_pampas-blog_test_develop_zookeeper.eb0c4462-4a78-11e7-99ca-70b3d5800001', status: 'TASK_RUNNING' }], mysql: [{ id: 'open-source_pampas-blog_test_develop_mysql.eb0c6b74-4a78-11e7-99ca-70b3d5800001', status: 'TASK_RUNNING' }], 'blog-web': [{ id: 'open-source_pampas-blog_test_develop_blog-web.1beec367-4a79-11e7-99ca-70b3d5800001', status: 'TASK_RUNNING', extra: true }], 'blog-service': [{ id: 'open-source_pampas-blog_test_develop_blog-service.11f22734-4a79-11e7-99ca-70b3d5800001', status: 'TASK_RUNNING' }], 'user-service': [{ id: 'open-source_pampas-blog_test_develop_user-service.08f87c10-4a79-11e7-99ca-70b3d5800001', status: 'TASK_STAGING' }], 'showcase-front': [{ id: 'open-source_pampas-blog_test_develop_showcase-front.29e6a91d-4a79-11e7-99ca-70b3d5800001', status: 'TASK_RUNNING' }] };
+  const runtimes = [
+    {
+      id: 555,
+      runtimeList: [
+        { id: 12, name: 'wtf' },
+        { id: 13, name: 'qwe' },
+        { id: 14, name: 'asd' }
+      ]
+    },
+    {
+      id: 666,
+      runtimeList: [
+        { id: 22, name: 'wtf2' },
+        { id: 23, name: 'qwe2' },
+        { id: 24, name: 'asd2' }
+      ]
+    }
+  ];
+  const statusMap = {
+    zookeeper: [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_zookeeper.eb0c4462-4a78-11e7-99ca-70b3d5800001',
+        status: 'TASK_RUNNING'
+      }
+    ],
+    mysql: [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_mysql.eb0c6b74-4a78-11e7-99ca-70b3d5800001',
+        status: 'TASK_RUNNING'
+      }
+    ],
+    'blog-web': [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_blog-web.1beec367-4a79-11e7-99ca-70b3d5800001',
+        status: 'TASK_RUNNING',
+        extra: true
+      }
+    ],
+    'blog-service': [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_blog-service.11f22734-4a79-11e7-99ca-70b3d5800001',
+        status: 'TASK_RUNNING'
+      }
+    ],
+    'user-service': [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_user-service.08f87c10-4a79-11e7-99ca-70b3d5800001',
+        status: 'TASK_STAGING'
+      }
+    ],
+    'showcase-front': [
+      {
+        id:
+          'open-source_pampas-blog_test_develop_showcase-front.29e6a91d-4a79-11e7-99ca-70b3d5800001',
+        status: 'TASK_RUNNING'
+      }
+    ]
+  };
   const fuzaObj = {
     arr: [
       {
@@ -49,29 +108,29 @@ export default (() => {
         age: 1,
         sub: {
           name: 'obj1Name',
-          extra: false,
-        },
+          extra: false
+        }
       },
       {
         text: 'arr2',
         age: 1,
         sub: {
           name: 'obj2Name',
-          extra: true,
-        },
-      },
+          extra: true
+        }
+      }
     ],
     obj: {
       obj_arr: [
         { obj_arr1: 'hhh' },
         { obj_arr2: 'ggg' },
         { obj_arr3: 'fff', isYou: true },
-        '乱入',
+        '乱入'
       ],
       love: 'you',
-      like: 'me',
+      like: 'me'
     },
-    base: 'outerBase',
+    base: 'outerBase'
   };
   const fuzaArr = [
     {
@@ -83,13 +142,10 @@ export default (() => {
         subArr: [
           { subText: 'sub1', status: 'run' },
           { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' },
-        ],
+          { subText: 'sub3', status: 'run' }
+        ]
       },
-      arr: [
-        [1, 2, 3],
-        [4, 5, 6],
-      ],
+      arr: [[1, 2, 3], [4, 5, 6]]
     },
     {
       text: 'arr2',
@@ -100,13 +156,10 @@ export default (() => {
         subArr: [
           { subText: 'sub1', status: 'run' },
           { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' },
-        ],
+          { subText: 'sub3', status: 'run' }
+        ]
       },
-      arr: [
-        [1, 2, 3],
-        [4, 5, 6],
-      ],
+      arr: [[1, 2, 3], [4, 5, 6]]
     },
     {
       text: 'arr3',
@@ -117,15 +170,12 @@ export default (() => {
         subArr: [
           { subText: 'sub1', status: 'run' },
           { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' },
-        ],
+          { subText: 'sub3', status: 'run' }
+        ]
       },
       hide: '2333',
-      arr: [
-        [1, 2, 3],
-        [4, 5, 6],
-      ],
-    },
+      arr: [[1, 2, 3], [4, 5, 6]]
+    }
   ];
 
   function getFuzaObj() {
@@ -151,22 +201,25 @@ export default (() => {
   output('ns5 obj下的obj_arr改为 woc :', ns5);
   const ns6 = update(getFuzaObj(), 'obj.test', 'woc').val();
   output('ns6 obj下新增test属性为 woc :', ns6);
-  const ns7 = update(getFuzaObj(), 'obj.test.hh', 'woc').val();
-  output('ns7 obj下新增test.hh属性为 woc 会报错 :', ns7);
+  // const ns7 = update(getFuzaObj(), 'obj.test.hh', 'woc').val();
+  // output('ns7 obj下新增test.hh属性为 woc 会报错 :', ns7);
   const ns8 = update(getFuzaObj(), 'base', 'hello').val();
   output('ns8 根级属性base改为hello :', ns8);
   // remove
   const ns9 = remove(getFuzaObj(), '', ['base']).val();
   output('ns9 移除根级属性base :', ns9);
   const ns10 = remove(getFuzaObj(), 'obj', ['love', 'like']).val();
-  output('ns10 移除obj.love\like :', ns10);
+  output('ns10 移除obj.lovelike :', ns10);
   const ns11 = remove(getFuzaObj(), 'obj.obj_arr.3').val();
   output('ns11 移除obj.obj_arr里的 ’乱入‘ :', ns11);
   const ns12 = remove(getFuzaObj(), 'obj.obj_arr', { isYou: true }).val();
   output('ns12 移除obj.obj_arr里isYou为true的 :', ns12);
-  const ns13 = remove(getFuzaObj(), 'obj.obj_arr', { isYou: true, none: false }).val();
+  const ns13 = remove(getFuzaObj(), 'obj.obj_arr', {
+    isYou: true,
+    none: false
+  }).val();
   output('ns13 移除obj.obj_arr里无匹配的 :', ns13);
-// todo: add @key
+  // todo: add @key
 
   // const nr1 = update(getFuzaArr(), 'base', 'hello').val();
   // output('nr1 根级属性base改为hello :', nr1);

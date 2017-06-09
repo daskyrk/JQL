@@ -6,5 +6,6 @@ Linnerfile
 _variables.scss
 jiggly.json
 node_modules/
+test/__snapshots__
 npm-debug.log
 yarn-error.log

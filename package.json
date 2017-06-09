@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "rm -rf dist && webpack --progress --color -w -d",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "repository": {
     "type": "git",
@@ -25,11 +25,19 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "ava": "^0.19.1",
+    "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.5.2",
     "babel-preset-stage-0": "^6.24.1",
     "eslint": "^3.19.0",
     "webpack": "^2.6.1"
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
   },
   "bugs": {
     "url": "https://github.com/daskyrk/JQL/issues"
