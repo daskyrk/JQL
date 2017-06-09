@@ -1,0 +1,30 @@
+extends: airbnb
+parser: babel-eslint
+env:
+  es6: true
+  browser: true
+  node: true
+  mocha: true
+settings:
+  import/resolver:
+    node:
+      moduleDirectory:
+        - node_modules
+        - app
+rules:
+  arrow-body-style: 0
+  max-len: 0
+  no-console: 0
+  no-use-before-define: 0
+  no-underscore-dangle: 0
+  no-class-assign: 0
+  no-extra-boolean-cast: 0
+  no-nested-ternary: 0
+  eol-last: 0
+  comma-dangle:
+    - error
+    - functions: ignore
+      objects: always-multiline
+      arrays: always-multiline
+  import/no-extraneous-dependencies: 0
+  import/prefer-default-export: 0

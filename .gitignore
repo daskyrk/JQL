@@ -1,0 +1,10 @@
+build/
+.DS_Store
+Linnerfile
+.idea/
+.vscode/
+_variables.scss
+jiggly.json
+node_modules/
+npm-debug.log
+yarn-error.log
