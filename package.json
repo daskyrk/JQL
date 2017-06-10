@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "rm -rf dist && webpack --progress --color -w -d",
-    "test": "ava"
+    "test": "rm -rf test/__snapshots__ && ava"
   },
   "repository": {
     "type": "git",

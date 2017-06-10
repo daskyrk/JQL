@@ -49,92 +49,17 @@ const fuzaObj = {
   },
   base: 'outerBase',
 };
-const fuzaArr = [
-  {
-    text: 'arr1',
-    age: 1,
-    sub: {
-      name: 'obj1Name',
-      extra: false,
-      subArr: [
-        {
-          subText: 'sub1',
-          status: 'run',
-        },
-        {
-          subText: 'sub2',
-          status: 'run',
-        },
-        {
-          subText: 'sub3',
-          status: 'run',
-        },
-      ],
-    },
-    arr: [[1, 2, 3], [4, 5, 6]],
-  },
-  {
-    text: 'arr2',
-    age: 1,
-    sub: {
-      name: 'obj2Name',
-      extra: true,
-      subArr: [
-        {
-          subText: 'sub1',
-          status: 'run',
-        },
-        {
-          subText: 'sub2',
-          status: 'run',
-        },
-        {
-          subText: 'sub3',
-          status: 'run',
-        },
-      ],
-    },
-    arr: [[1, 2, 3], [4, 5, 6]],
-  },
-  {
-    text: 'arr3',
-    age: 3,
-    sub: {
-      name: 'obj3Name',
-      extra: true,
-      subArr: [
-        {
-          subText: 'sub1',
-          status: 'run',
-        },
-        {
-          subText: 'sub2',
-          status: 'run',
-        },
-        {
-          subText: 'sub3',
-          status: 'run',
-        },
-      ],
-    },
-    hide: '2333',
-    arr: [[1, 2, 3], [4, 5, 6]],
-  },
-];
 
 function getFuzaObj() {
   return _.cloneDeep(fuzaObj);
 }
 
-function getFuzaArr() {
-  return _.cloneDeep(fuzaArr);
-}
-
 const c = _.cloneDeep;
-
-// object
-// update
+let origin = null;
 let result = null;
+
+/** ******************************* object *********************************/
+// update
 test('arr下第一个对象加了add属性', (t) => {
   result = update(getFuzaObj(), 'arr.0', { add: 'hello' }).val();
   t.is(result.arr[0].add, 'hello');
@@ -232,87 +157,269 @@ test('移除obj.obj_arr里无匹配的', (t) => {
 
 // todo: add @key
 
-// array
+/** ******************************* array *********************************/
 
-// const nr1 = update(getFuzaArr(), 'base', 'hello').val();
-// output('nr1 根级属性base改为hello :', nr1);
-// const nr2 = update(getFuzaArr(), '1', {age: 2}).val();
-// output('nr2 第二个对象age改为2 :', nr2);
-// const nr3 = update(getFuzaArr(), '@child{$parent}.sub', { name: 'hi' }).when({ $parent: { text: 'arr3' } }).val();
-// output('nr3 text为arr3的对象下sub.name改为hi :', nr3);
-// const nr4 = update(getFuzaArr(), '@child{$parent}.sub.subArr.@child{$sub}', { status: 'done' }).when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } }).val();
-// output('nr4 text为arr2的对象下sub.subArr中subText=sub1对象的status为done :', nr4);
-// const nr4_2 = update(getFuzaArr(), '@child{$parent}.sub.subArr.@child{$sub}')
-//             .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
-//             .to((parent, subs) => {
-//               subs.forEach((sub) => {
-//                 sub.status = 'done';
-//               });
-//             }).val();
-// output('nr4_2 text为arr2的对象下sub.subArr中subText=sub1对象的status为done :', nr4_2);
-// const nr5 = update(getFuzaArr(), '@child{$parent}.sub')
-//             .when({ $parent: { age: 3 } })
-//             .to((parent, subs) => {
-//               // parent.forEach((p) => {
-//                 // if (p.age === 3) { 不要在to里做判断筛选，应该放到when中
-//                 // }
-//               // });
-//               subs.forEach((sub) => {
-//                 sub.extra = false;
-//                 sub.subArr.length = 1;
-//               });
-//             }).val();
-// output('nr5 age为3的对象下sub.extra改为false，subArr长度改为1 :', nr5);
-// const nr6 = update(getFuzaArr(), '@child.arr.@child')
-//             .to((arrs) => {
-//               arrs.forEach((arr) => {
-//                 if (arr.includes(5)) {
-//                   _.pull(arr, 6);
-//                 }
-//               });
-//             })
-//             .val();
-// output('nr6 所有arr中包含5的数组移除6 :', nr6);
-// const nr7 = update(getFuzaArr(), '@child{$parent}.arr.@child')
-//             .when({ $parent: 'hide' })
-//             .to((parent, arrs) => {
-//               arrs.forEach((arr) => {
-//                 if (arr.includes(5)) {
-//                   _.pull(arr, 6);
-//                 }
-//               });
-//             })
-//             .val();
-// output('nr7 有hide属性的arr中包含5的数组移除6 :', nr7);
+const fuzaArr = [
+  {
+    text: 'arr1',
+    age: 1,
+    sub: {
+      name: 'obj1Name',
+      extra: false,
+      subArr: [
+        {
+          subText: 'sub1',
+          status: 'run',
+        },
+        {
+          subText: 'sub2',
+          status: 'run',
+        },
+        {
+          subText: 'sub3',
+          status: 'run',
+        },
+      ],
+    },
+    arr: [[1, 2, 3], [4, 5, 6]],
+  },
+  {
+    text: 'arr2',
+    age: 2,
+    sub: {
+      name: 'obj2Name',
+      extra: true,
+      subArr: [
+        {
+          subText: 'sub1',
+          status: 'run',
+        },
+        {
+          subText: 'sub2',
+          status: 'run',
+        },
+        {
+          subText: 'sub3',
+          status: 'run',
+        },
+      ],
+    },
+    arr: [[1, 2, 3], [4, 5, 6]],
+  },
+  {
+    text: 'arr3',
+    age: 3,
+    sub: {
+      name: 'obj3Name',
+      extra: true,
+      subArr: [
+        {
+          subText: 'sub1',
+          status: 'run',
+        },
+        {
+          subText: 'sub2',
+          status: 'run',
+        },
+        {
+          subText: 'sub3',
+          status: 'run',
+        },
+      ],
+    },
+    hide: '2333',
+    arr: [[1, 2, 3], [4, 5, 6]],
+  },
+];
 
-// const rs1 = update(c(obj), 'params.id', '改动值').val();
-// output('rs1 params.id :', rs1);
-// const rs2 = update(c(statusMap), '@child', { status: 'DELETED', animation: '改动值' }).val();
-// output('rs2 所有child :', rs2);
-// const rs3 = update(c(runtimes), '@child{parent}.runtimeList.@child', { status: 'ENABLE**改动值' }).when({ id: 12, parent: { id: 666 } }).val();
-// output('rs3 parent id=666的 子id=12的 :', rs3);
-// const rs4 = update(c(runtimes), '@child{$parent}.runtimeList.@child')
-//             .when({ id: 12, $parent: { id: 555 } })
-//             .to((parent, target) => {
-//               // parent.push({ time: 123456 });
-//               // target[0].end = true;
-//               parent.forEach((p) => {
-//                 if (p.id === 555) {
-//                   target[0].here = true;
-//                 }
-//               });
-//             }).val();
-// output('rs4 parent id=555 第一个子级增加here=true :', rs4);
-// const rs5 = update(c(statusMap), '@child{$type}.@child', { status: 'DELETED', animation: '改动值' })
-//             .when({ status: 'TASK_RUNNING', $type: { '@key': 'zookeeper' } })
-//             .val();
-// output('rs5 key=zookeeper的 :', rs5);
+function getFuzaArr() {
+  return _.cloneDeep(fuzaArr);
+}
+// update
+test('arr中第二个对象age改为222', (t) => {
+  result = update(getFuzaArr(), '1', { age: 222 }).val();
+  t.snapshot(result);
+  t.is(result[1].age, 222);
+});
 
-// const rs6 = remove(obj, 'params', ['id', 'age']).val();
-// output('rs6 ************* :', rs6);
-// const rs7 = remove(statusMap, '@child', { extra: true }).val();
-// output('rs7 ************* :', rs7);
-// const rs8 = remove(runtimes, '@child', ['runtimeList']).val();
-// output('rs8 ************* :', rs8);
-// const rs9 = remove(runtimes, '@child.runtimeList.@child', { name: 'wtf' }).val();
-// output('rs9 ************* :', rs9);
+test('arr中text为arr3的对象下的sub.name改为hi', (t) => {
+  result = update(getFuzaArr(), '@child{$parent}.sub', { name: 'hi' }).when({ $parent: { text: 'arr3' } }).val();
+  _.filter(result, { text: 'arr3' }).forEach((item) => {
+    t.is(item.sub.name, 'hi');
+  });
+  t.snapshot(result);
+});
+
+test('arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改为done', (t) => {
+  result = update(getFuzaArr(), '@child{$parent}.sub.subArr.@child{$sub}', { status: 'done' }).when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } }).val();
+  const parents = _.filter(result, { text: 'arr2' });
+  t.is(parents.length, 1);
+  const targets = parents.reduce((prev, curr) => {
+    return prev.concat(_.filter(curr.sub.subArr, { subText: 'sub1' }));
+  }, []);
+  t.is(targets.length, 1);
+  t.is(targets[0].status, 'done');
+  t.snapshot(result);
+});
+
+test('arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改为failed 使用to方法', (t) => {
+  result = update(getFuzaArr(), '@child{$parent}.sub.subArr.@child{$sub}')
+          .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
+          .to((parents, subs) => {
+            subs.forEach((sub) => {
+              sub.status = 'failed';
+            });
+          }).val();
+  const parents = _.filter(result, { text: 'arr2' });
+  t.is(parents.length, 1);
+  const targets = parents.reduce((prev, curr) => {
+    return prev.concat(_.filter(curr.sub.subArr, { subText: 'sub1' }));
+  }, []);
+  t.is(targets.length, 1);
+  t.is(targets[0].status, 'failed');
+  t.snapshot(result);
+});
+
+test('arr中age为3的对象下的sub.extra改为false，subArr长度改为1', (t) => {
+  origin = getFuzaArr();
+  const parentsBefore = _.filter(origin, { age: 3 });
+  t.is(parentsBefore.length, 1);
+  parentsBefore.forEach((p) => {
+    t.true(p.sub.extra);
+    t.is(p.sub.subArr.length, 3);
+  });
+  result = update(origin, '@child{$parent}.sub')
+          .when({ $parent: { age: 3 } })
+          .to((parents, subs) => {
+            subs.forEach((sub) => {
+              sub.extra = false;
+              sub.subArr.length = 1;
+            });
+          }).val();
+  const parentsAfter = _.filter(result, { age: 3 });
+  t.is(parentsAfter.length, 1);
+  parentsAfter.forEach((p) => {
+    t.false(p.sub.extra);
+    t.is(p.sub.subArr.length, 1);
+  });
+  t.snapshot(result);
+});
+
+test('所有arr中包含5的数组移除6', (t) => {
+  origin = getFuzaArr();
+  const targetsBefore = [];
+  _.forEach(origin, (item) => {
+    item.arr.forEach((subArr) => {
+      subArr.includes(5) && targetsBefore.push(subArr);
+    });
+  });
+  t.is(targetsBefore.length, 3);
+  targetsBefore.forEach((arr) => {
+    t.truthy(arr.includes(6));
+    t.is(arr.toString(), '4,5,6');
+  });
+  result = update(origin, '@child.arr.@child')
+          .to((arrs) => {
+            arrs.forEach((arr) => {
+              if (arr.includes(5)) {
+                _.pull(arr, 6);
+              }
+            });
+          }).val();
+  const targetsAfter = [];
+  _.forEach(result, (item) => {
+    item.arr.forEach((subArr) => {
+      subArr.includes(5) && targetsAfter.push(subArr);
+    });
+  });
+  t.is(targetsAfter.length, 3);
+  targetsAfter.forEach((arr) => {
+    t.falsy(arr.includes(6));
+    t.is(arr.toString(), '4,5');
+  });
+  t.snapshot(result);
+});
+
+test('有hide属性的arr中包含5的数组移除6', (t) => {
+  origin = getFuzaArr();
+  const targetsBefore = [];
+  let notChange = null;
+  _.forEach(origin, (item) => {
+    if (item.hide !== undefined) {
+      item.arr.forEach((subArr) => {
+        subArr.includes(5) && targetsBefore.push(subArr);
+      });
+    } else {
+      notChange = item;
+    }
+  });
+  t.is(targetsBefore.length, 1);
+  targetsBefore.forEach((arr) => {
+    t.truthy(arr.includes(6));
+    t.is(arr.toString(), '4,5,6');
+  });
+  t.is(notChange.arr[1].toString(), '4,5,6');
+  result = update(origin, '@child{$parent}.arr.@child')
+          .when({ $parent: 'hide' })
+          .to((parent, arrs) => {
+            arrs.forEach((arr) => {
+              if (arr.includes(5)) {
+                _.pull(arr, 6);
+              }
+            });
+          }).val();
+  const targetsAfter = [];
+  _.forEach(result, (item) => {
+    if (item.hide !== undefined) {
+      item.arr.forEach((subArr) => {
+        subArr.includes(5) && targetsAfter.push(subArr);
+      });
+    } else {
+      notChange = item;
+    }
+  });
+  t.is(targetsAfter.length, 1);
+  targetsAfter.forEach((arr) => {
+    t.falsy(arr.includes(6));
+    t.is(arr.toString(), '4,5');
+  });
+  t.is(notChange.arr[1].toString(), '4,5,6');
+  t.snapshot(result);
+});
+
+// remove
+test('移除arr中index为1的项', (t) => {
+  origin = getFuzaArr();
+  t.is(origin.length, 3);
+  result = remove(origin, '1').val();
+  t.is(result.length, 2);
+  t.is(result[1].text, 'arr3');
+  t.snapshot(result);
+});
+
+test('移除arr中hide属性为2333的项', (t) => {
+  origin = getFuzaArr();
+  t.is(origin.length, 3);
+  result = remove(origin, '@child', { hide: '2333' }).val();
+  t.is(result.length, 2);
+  t.snapshot(result);
+});
+
+// @todo
+// test('移除arr有hide属性的项', (t) => {
+//   origin = getFuzaArr();
+//   t.is(origin.length, 3);
+//   result = remove(origin, '@child', ['hide']).val();
+//   t.is(result.length, 2);
+//   t.snapshot(result);
+// });
+
+// 移除父级还是子级？判断依据？
+// test('移除arr中sub.extra为false的项', (t) => {
+//   origin = getFuzaArr();
+//   t.is(origin.length, 3);
+//   result = remove(origin, '@child.sub', { extra: false }).val();
+//   console.log('result:', result);
+//   t.is(result.length, 2);
+//   t.snapshot(result);
+// });

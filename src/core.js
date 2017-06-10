@@ -209,6 +209,7 @@ const chain = {
     deepArray.forEach((deep) => {
       let temp = [];
       if (deep.startsWith('@child')) {
+        // @todo 第一个参数为数组时会有问题
         temp = [...nextResult];
       } else {
         temp = nextResult.map(result => this.getDeep(result, deep));
