@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const CHILD = '@child';
-const KEY = '@key';
+const KEY = '@KEY';
 
 const logFn = tip => console.log.apply(console, [`%c ${tip}`, 'color: red']);
 const warn = console.warn || logFn;
@@ -33,12 +33,12 @@ const chain = {
     return this;
   },
   initArgs({ source, str, value, removeFilter }) {
-    this.checkInitArgs({ source, str })
+    this.checkInitArgs({ source, str });
     if (Array.isArray(source)) {
       this.sourceType = 'array';
       this.source = [...source];
       this.result = [...source];
-    } else if(_.isObject(source) && !_.isNull(source)) {
+    } else if (_.isObject(source) && !_.isNull(source)) {
       this.sourceType = 'object';
       this.source = { ...source };
       this.result = { ...source };
@@ -48,7 +48,7 @@ const chain = {
     this.removeFilter = removeFilter;
     this.tip = setTimeout(() => warn('是否忘了调用val？'), 0);
   },
-  checkInitArgs({ source, str }){
+  checkInitArgs({ source, str }) {
     let goOn = true;
     if (typeof source !== 'object' || source === null) {
       goOn = false;
@@ -56,8 +56,8 @@ const chain = {
     }
 
     if (typeof str === 'string') {
-      const deepArray = str === '' ? [] : str.split('.');
-      this.deepArray = deepArray;
+      const pathArray = str === '' ? [] : str.split('.');
+      this.pathArray = pathArray;
     } else {
       goOn = false;
       warn('第二个参数应为字符串');
@@ -74,6 +74,16 @@ const chain = {
         break;
       case 'function':
         this.filterFn = filter;
+        this.filterFnArgArr = [];
+        const pathFilterArr = []
+        this.pathArray.forEach((path) => {
+          const match = path.match(/\{(.+)\}/);
+          match && pathFilterArr.push(match[1]);
+        });
+        if (filter.length !== pathFilterArr.length+1) {
+          warn('when的参数和路径中的数量不匹配');
+        }
+        this.pathFilterArr = pathFilterArr;
         break;
       default:
         warn('条件应为对象、字符串或方法');
@@ -122,8 +132,8 @@ const chain = {
           warn('update缺少第三个参数');
         }
         this.valueIsObj = typeof value === 'object';
-        if (!this.valueIsObj) { // 如果value为对象，说明是合并更新，否则deep数组要去掉最后一个，以获得上一级对象
-          this.lastDeep = this.deepArray.splice(-1)[0];
+        if (!this.valueIsObj) { // 如果value为对象，说明是合并更新，否则path数组要去掉最后一个，以获得上一级对象
+          this.lastDeep = this.pathArray.splice(-1)[0];
         }
         // if (this.targetIsObj && this.valueIsObj) {
         //   goOn = false;
@@ -136,9 +146,9 @@ const chain = {
       }
     } else {
       if (this.removeFilter === undefined) {
-        this.lastDeep = this.deepArray.splice(-1)[0];
+        this.lastDeep = this.pathArray.splice(-1)[0];
       }
-      // if (!this.deepArray.length && !this.lastDeep) {
+      // if (!this.pathArray.length && !this.lastDeep) {
       //   warn('remove的后两个参数不能都为空');
       // };
     }
@@ -147,13 +157,13 @@ const chain = {
   },
   // 更新时需要找到外层的对象，再更新其某个属性
   getTargets() {
-    const deepArray = this.deepArray;
+    const pathArray = this.pathArray;
     let targetArr = [];
     let nextResult = [this.result];
-    deepArray.forEach((deep) => {
+    pathArray.forEach((path) => {
       let temp = [];
-      if (deep.startsWith(CHILD)) {
-        nextResult = this.doFilterForWhen(deep, nextResult);
+      if (path.startsWith(CHILD)) {
+        nextResult = this.doFilterForWhen(path, nextResult);
         _.forEach(nextResult, (value, key) => {
           if (Array.isArray(value)) {
             temp = temp.concat(value);
@@ -162,9 +172,9 @@ const chain = {
           }
         });
       } else if (Array.isArray(nextResult)) {
-        temp = nextResult.map(result => this.getDeep(result, deep));
+        temp = nextResult.map(result => this.getDeep(result, path));
       } else {
-        temp.push(this.getDeep(nextResult, deep));
+        temp.push(this.getDeep(nextResult, path));
       }
       nextResult = temp;
     });
@@ -181,22 +191,27 @@ const chain = {
   stop() {
     this.val = () => null;
   },
-  doFilterForWhen(deep, nextResult) {
+  doFilterForWhen(path, nextResult) {
     const filterObj = this.filterObj;
     let finResult = nextResult;
     nextResult.forEach((result) => {
-      let match = deep.match(/\{(.+)\}/);
+      let match = path.match(/\{(.+)\}/);
       match = match ? match[1] : false;
       if (match) {
-        const filter = typeof filterObj === 'string' ? filterObj : filterObj[match];
-        // 过滤的是对象
-        if (filter[KEY]) {
-          finResult = [result[filter[KEY]]];
-        } else {
-          finResult = _.filter(result, filter);
+        if (filterObj) {
+          const filter = typeof filterObj === 'string' ? filterObj : filterObj[match];
+          // 过滤的是对象
+          if (filter[KEY]) {
+            finResult = [result[filter[KEY]]];
+          } else {
+            finResult = _.filter(result, filter);
+          }
+          console.log('过滤条件:', filter, '过滤后：', finResult);
+          delete filterObj[match];
+        } else if (filterFn) {
+          // 应该只能在最后进行一次性过滤
+          this.filterFnArgArr.push(finResult);
         }
-        console.log('过滤条件:', filter, '过滤后：', finResult);
-        delete filterObj[match];
         if (this.toFn) {
           this.toFnArgArr.push(finResult);
         }
@@ -209,6 +224,10 @@ const chain = {
       targets = _.filter(targets, this.filterObj);
     }
     console.log('目标是:', targets);
+    if (this.filterFn) {
+      this.filterFnArgArr.push(targets);
+      this.filterFn.apply(this, this.filterFnArgArr);
+    }
     if (this.toFn) {
       this.toFnArgArr.push(targets);
       this.toFn.apply(this, this.toFnArgArr);
@@ -223,16 +242,17 @@ const chain = {
     });
   },
   getRemoveTargets() {
-    const deepArray = this.deepArray;
+    const pathArray = this.pathArray;
     let targetArr = [];
     let nextResult = [this.result];
-    deepArray.forEach((deep) => {
+    pathArray.forEach((path) => {
       let temp = [];
-      if (deep.startsWith(CHILD)) {
+      if (path.startsWith(CHILD)) {
         // @todo 第一个参数为数组时会有问题
+        nextResult = this.doFilterForWhen(path, nextResult);
         temp = [...nextResult];
       } else {
-        temp = nextResult.map(result => this.getDeep(result, deep));
+        temp = nextResult.map(result => this.getDeep(result, path));
       }
       nextResult = temp;
     });
@@ -240,9 +260,18 @@ const chain = {
     return targetArr;
   },
   doRemove(targets, removeFilter) {
+    if (this.filterFn) {
+      this.filterFnArgArr.push(targets);
+      this.filterFn.apply(this, this.filterFnArgArr);
+    }
     if (removeFilter) {
       const removeAttr = Array.isArray(removeFilter);
       targets.forEach((target) => {
+        // if (Array.isArray(target)) {
+        //   console.log("暂未处理:");
+        //   // this.doRemove(target, removeFilter);
+        // }else {
+        // }
         if (removeAttr) {
           removeFilter.forEach(key => delete target[key]);
         } else {

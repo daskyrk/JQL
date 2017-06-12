@@ -80,9 +80,33 @@ test('arr下所有的sub name都改为hello', (t) => {
   t.snapshot(result);
 });
 
+test('arr下extra=true的sub name都改为hello', (t) => {
+  result = update(getFuzaObj(), 'arr.@child.sub', { name: 'hello' }).when({ extra: true }).val();
+  result.arr.forEach(({ sub }) => {
+    if (sub.extra) {
+      t.is(sub.name, 'hello');
+    } else {
+      t.not(sub.name, 'hello');
+    }
+  });
+  t.snapshot(result);
+});
+
 test('arr下第一个对象改为 hello', (t) => {
   result = update(getFuzaObj(), 'arr.0', 'hello').val();
   t.is(result.arr[0], 'hello');
+  t.snapshot(result);
+});
+
+test('arr下text=arr2的对象age都改为hello', (t) => {
+  result = update(getFuzaObj(), 'arr.@child', { age: 'hello' }).when({ text: 'arr2' }).val();
+  result.arr.forEach((item) => {
+    if (item.text === 'arr2') {
+      t.is(item.age, 'hello');
+    } else {
+      t.is(item.age, 1);
+    }
+  });
   t.snapshot(result);
 });
 
@@ -133,9 +157,9 @@ test('移除obj.obj_arr里的第4项 ’乱入‘', (t) => {
   t.snapshot(result);
 });
 
-// todo
+// todo 添加toFn ？
 // test('移除obj.obj_arr里的 ’乱入‘', (t) => {
-//   result = remove(getFuzaObj(), 'obj.obj_arr.3', '乱入').val();
+//   result = remove(getFuzaObj(), 'obj.obj_arr', '乱入').val();
 //   t.is(result.obj.obj_arr.length, 3);
 //   t.falsy(result.obj.obj_arr.includes('乱入'));
 //   t.snapshot(result);
@@ -405,14 +429,14 @@ test('移除arr中hide属性为2333的项', (t) => {
   t.snapshot(result);
 });
 
-// @todo
-// test('移除arr有hide属性的项', (t) => {
-//   origin = getFuzaArr();
-//   t.is(origin.length, 3);
-//   result = remove(origin, '@child', ['hide']).val();
-//   t.is(result.length, 2);
-//   t.snapshot(result);
-// });
+// @todo 移除arr中的某个对象还是对象中的某个属性？
+test('移除arr有hide属性的项', (t) => {
+  origin = getFuzaArr();
+  t.is(origin.length, 3);
+  result = remove(origin, '', {'@key': 'hide'}).val();
+  // t.is(result.length, 2);
+  t.snapshot(result);
+});
 
 // 移除父级还是子级？判断依据？
 // test('移除arr中sub.extra为false的项', (t) => {

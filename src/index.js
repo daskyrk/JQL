@@ -187,8 +187,13 @@ export default (() => {
   }
 
   const c = _.cloneDeep;
+  let result = null;
 
-  let result = remove(getFuzaArr(), '@child.sub', { extra: false }).val();
+  // result = remove(getFuzaArr(), '@child.sub', { extra: false }).val();
+  // result = remove(getFuzaArr(), '', 'hide').val();
+  result = update(getFuzaArr(), '@child.sub{$p}.subArr', [6]).when((ps, childs)=>{
+    debugger;
+  }).val();
   output('rs1 result :', result);
 
   // const rs1 = update(c(obj), 'params.id', '改动值').val();
