@@ -28,7 +28,6 @@ const chain = {
     return this;
   },
   remove(source, str, removeFilter) {
-    // this.removeMode = true;
     this.initArgs({ source, str, removeFilter });
     return this;
   },
@@ -44,22 +43,36 @@ const chain = {
       this.result = { ...source };
     }
     this.str = str;
+    this.initPathArray(str);
     this.value = value;
     this.removeFilter = removeFilter;
     this.tip = setTimeout(() => warn('是否忘了调用val？'), 0);
   },
+  initPathArray(str) {
+    const paths = str === '' ? [] : str.split('.');
+    this.pathArray = paths.map((path, i) => {
+      const item = {
+        path,
+        origin: path,
+        wantChildren: path.startsWith(CHILD),
+      };
+      const match = path.match(/\{(.+)\}/);
+      if (match) {
+        // remove {$tag}
+        item.path = path.slice(0, -match.length - 2);
+        item.tag = match[1];
+      }
+      return item;
+    });
+  },
   checkInitArgs({ source, str }) {
-    let goOn = true;
     if (typeof source !== 'object' || source === null) {
-      goOn = false;
+      this.hasError = true;
       warn('第一个参数应为对象或数组');
     }
 
-    if (typeof str === 'string') {
-      const pathArray = str === '' ? [] : str.split('.');
-      this.pathArray = pathArray;
-    } else {
-      goOn = false;
+    if (typeof str !== 'string') {
+      this.hasError = true;
       warn('第二个参数应为字符串');
     }
   },
@@ -69,24 +82,28 @@ const chain = {
       case 'object':
         this.filterObj = filter;
         break;
-      case 'string':
-        this.filterObj = filter;
-        break;
+      // case 'string':
+      //   this.filterObj = filter;
+      //   break;
       case 'function':
         this.filterFn = filter;
         this.filterFnArgArr = [];
-        const pathFilterArr = []
-        this.pathArray.forEach((path) => {
-          const match = path.match(/\{(.+)\}/);
-          match && pathFilterArr.push(match[1]);
-        });
-        if (filter.length !== pathFilterArr.length+1) {
-          warn('when的参数和路径中的数量不匹配');
-        }
-        this.pathFilterArr = pathFilterArr;
+        // const pathFilterArr = [];
+        // this.pathArray.forEach(({filter}) => {
+        //   const match = path.match(/\{(.+)\}/);
+        //   if (filter) {
+        //     pathFilterArr.push(match[1]);
+        //     // remove {$tag}
+        //     path = path.slice(0, -match.length - 2);
+        //   }
+        // });
+        // if (filter.length !== pathFilterArr.length + 1) {
+        //   warn('when的参数和路径中的数量不匹配');
+        // }
+        // this.pathFilterArr = pathFilterArr;
         break;
       default:
-        warn('条件应为对象、字符串或方法');
+        warn('条件应为对象或方法');
     }
     return this;
   },
@@ -98,8 +115,8 @@ const chain = {
   },
   val() {
     clearTimeout(this.tip);
-    const goOn = this.checkArgs(this.source, this.str, this.value);
-    if (!goOn) {
+    this.checkArgs(this.source, this.str, this.value);
+    if (this.hasError) {
       warn('参数不正确，返回');
       this.stop();
       return this;
@@ -112,13 +129,12 @@ const chain = {
     return this.result;
   },
   checkArgs(source, str, value) {
-    let goOn = true;
     if (this.updateMode) {
       // toFn和value参数二选一
       if (this.toFn) {
         if (value !== undefined) {
-          goOn = false;
           warn('使用to方法时update不应传第三个参数');
+          this.hasError = true;
         }
         // 约定 when 中的父级匹配以$开头 有可能参数包括最后一个，比如a{$p}.b{$c}, when(p, c)，这时需要判断最后一个是否$开头，有则长度一致
         // const filterLength = _.filter(_.keys(this.filterObj), key => key.startsWith('$')).length;
@@ -128,42 +144,38 @@ const chain = {
         // }
       } else {
         if (value === undefined) {
-          goOn = false;
           warn('update缺少第三个参数');
+          this.hasError = true;
         }
         this.valueIsObj = typeof value === 'object';
         if (!this.valueIsObj) { // 如果value为对象，说明是合并更新，否则path数组要去掉最后一个，以获得上一级对象
-          this.lastDeep = this.pathArray.splice(-1)[0];
+          this.lastPath = this.pathArray.splice(-1)[0].path;
         }
-        // if (this.targetIsObj && this.valueIsObj) {
-        //   goOn = false;
-        //   warn('update第三个参数应为对象');
-        // }
-        // if (!this.targetIsObj && !this.valueIsObj) {
-        //   goOn = false;
-        //   warn('应该使用replace代替update');
-        // }
       }
     } else {
       if (this.removeFilter === undefined) {
-        this.lastDeep = this.pathArray.splice(-1)[0];
+        this.lastPath = this.pathArray.splice(-1)[0].path;
       }
-      // if (!this.pathArray.length && !this.lastDeep) {
+      // if (!this.pathArray.length && !this.lastPath) {
       //   warn('remove的后两个参数不能都为空');
       // };
     }
-
-    return goOn;
+  },
+  stop() {
+    this.val = () => null;
   },
   // 更新时需要找到外层的对象，再更新其某个属性
   getTargets() {
     const pathArray = this.pathArray;
     let targetArr = [];
     let nextResult = [this.result];
-    pathArray.forEach((path) => {
+    // 根据每一节路径筛选
+    pathArray.forEach(({wantChildren, path, tag}, i) => {
       let temp = [];
-      if (path.startsWith(CHILD)) {
-        nextResult = this.doFilterForWhen(path, nextResult);
+      if (tag) {
+        nextResult = this.filterWithTag(tag, nextResult);
+      };
+      if (wantChildren) {
         _.forEach(nextResult, (value, key) => {
           if (Array.isArray(value)) {
             temp = temp.concat(value);
@@ -188,36 +200,36 @@ const chain = {
     warn(`对象${JSON.stringify(target)}的${attr}属性不存在`);
     this.stop();
   },
-  stop() {
-    this.val = () => null;
-  },
-  doFilterForWhen(path, nextResult) {
-    const filterObj = this.filterObj;
+  filterWithObj(filterObj, tag, nextResult) {
     let finResult = nextResult;
     nextResult.forEach((result) => {
-      let match = path.match(/\{(.+)\}/);
-      match = match ? match[1] : false;
-      if (match) {
-        if (filterObj) {
-          const filter = typeof filterObj === 'string' ? filterObj : filterObj[match];
-          // 过滤的是对象
-          if (filter[KEY]) {
-            finResult = [result[filter[KEY]]];
-          } else {
-            finResult = _.filter(result, filter);
-          }
-          console.log('过滤条件:', filter, '过滤后：', finResult);
-          delete filterObj[match];
-        } else if (filterFn) {
-          // 应该只能在最后进行一次性过滤
-          this.filterFnArgArr.push(finResult);
-        }
-        if (this.toFn) {
-          this.toFnArgArr.push(finResult);
-        }
+      const filter = filterObj[tag];
+      // 过滤的是对象
+      if (filter[KEY]) {
+        // 取得每个对象的某个属性构成的数组
+        finResult = [result[filter[KEY]]];
+      } else {
+        finResult = _.filter(result, filter);
+      }
+      console.log('过滤条件:', filter, '过滤后：', finResult);
+      delete filterObj[tag];
+      if (this.toFn) {
+        this.toFnArgArr.push(finResult);
       }
     });
     return finResult;
+  },
+  filterWithTag(tag, nextResult) {
+    const filterObj = this.filterObj;
+    const filterFn = this.filterFn;
+    let result = nextResult;
+    if (filterObj) {
+      result = this.filterWithObj(filterObj, tag, nextResult);
+    } else if (filterFn) {
+      // 应该只能在最后进行一次性过滤
+      this.filterFnArgArr.push(nextResult);
+    }
+    return result;
   },
   doUpdate(targets, value) {
     if (this.filterObj) {
@@ -237,7 +249,7 @@ const chain = {
       if (this.valueIsObj) {
         Object.assign(item, value);
       } else if (!this.toFn) { // 没有toFn时才直接赋值，否则会把@child属性放上去
-        item[this.lastDeep] = value;
+        item[this.lastPath] = value;
       }
     });
   },
@@ -245,11 +257,11 @@ const chain = {
     const pathArray = this.pathArray;
     let targetArr = [];
     let nextResult = [this.result];
-    pathArray.forEach((path) => {
+    pathArray.forEach(({wantChildren, path, tag}) => {
       let temp = [];
-      if (path.startsWith(CHILD)) {
+      if (wantChildren) {
         // @todo 第一个参数为数组时会有问题
-        nextResult = this.doFilterForWhen(path, nextResult);
+        // nextResult = this.doFilterForWhen(path, nextResult);
         temp = [...nextResult];
       } else {
         temp = nextResult.map(result => this.getDeep(result, path));
@@ -279,7 +291,7 @@ const chain = {
         }
       });
     } else {
-      targets.forEach(target => _.pullAt(target, this.lastDeep));
+      targets.forEach(target => _.pullAt(target, this.lastPath));
     }
   },
 };

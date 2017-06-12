@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import chain from './core';
+import { testArr, testObj , clone, update, remove } from './base_for_test';
 
 const div = document.querySelector('#output');
 const output = (...args) => {
@@ -16,14 +17,9 @@ const output = (...args) => {
   div.innerHTML = str;
 };
 
-function update(...args) {
-  const chainCopy = { ...chain };
-  return chainCopy.update(...args);
-}
-function remove(...args) {
-  const chainCopy = { ...chain };
-  return chainCopy.remove(...args);
-}
+const getObj = clone(testObj);
+const getArr = clone(testArr);
+
 
 export default (() => {
   const obj = {
@@ -101,99 +97,14 @@ export default (() => {
       }
     ]
   };
-  const fuzaObj = {
-    arr: [
-      {
-        text: 'arr1',
-        age: 1,
-        sub: {
-          name: 'obj1Name',
-          extra: false
-        }
-      },
-      {
-        text: 'arr2',
-        age: 1,
-        sub: {
-          name: 'obj2Name',
-          extra: true
-        }
-      }
-    ],
-    obj: {
-      obj_arr: [
-        { obj_arr1: 'hhh' },
-        { obj_arr2: 'ggg' },
-        { obj_arr3: 'fff', isYou: true },
-        '乱入'
-      ],
-      love: 'you',
-      like: 'me'
-    },
-    base: 'outerBase'
-  };
-  const fuzaArr = [
-    {
-      text: 'arr1',
-      age: 1,
-      sub: {
-        name: 'obj1Name',
-        extra: false,
-        subArr: [
-          { subText: 'sub1', status: 'run' },
-          { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' }
-        ]
-      },
-      arr: [[1, 2, 3], [4, 5, 6]]
-    },
-    {
-      text: 'arr2',
-      age: 1,
-      sub: {
-        name: 'obj2Name',
-        extra: true,
-        subArr: [
-          { subText: 'sub1', status: 'run' },
-          { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' }
-        ]
-      },
-      arr: [[1, 2, 3], [4, 5, 6]]
-    },
-    {
-      text: 'arr3',
-      age: 3,
-      sub: {
-        name: 'obj3Name',
-        extra: true,
-        subArr: [
-          { subText: 'sub1', status: 'run' },
-          { subText: 'sub2', status: 'run' },
-          { subText: 'sub3', status: 'run' }
-        ]
-      },
-      hide: '2333',
-      arr: [[1, 2, 3], [4, 5, 6]]
-    }
-  ];
-
-  function getFuzaObj() {
-    return _.cloneDeep(fuzaObj);
-  }
-
-  function getFuzaArr() {
-    return _.cloneDeep(fuzaArr);
-  }
-
-  const c = _.cloneDeep;
   let result = null;
 
   // result = remove(getFuzaArr(), '@child.sub', { extra: false }).val();
+  result = update(getObj(), 'arr.0', 'hello').val();
   // result = remove(getFuzaArr(), '', 'hide').val();
-  result = update(getFuzaArr(), '@child.sub{$p}.subArr', [6]).when((ps, childs)=>{
-    debugger;
-  }).val();
+  // result = update(getFuzaArr(), '@child.sub{$p}.subArr', [6]).when((ps, childs)=>{
+  //   debugger;
+  // }).val();
   output('rs1 result :', result);
 
   // const rs1 = update(c(obj), 'params.id', '改动值').val();
