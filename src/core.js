@@ -1,12 +1,30 @@
 import _ from 'lodash';
 
+const CHILD = '@child';
+const KEY = '@key';
+
 const logFn = tip => console.log.apply(console, [`%c ${tip}`, 'color: red']);
 const warn = console.warn || logFn;
 
+// *** update
+// 匹配到的类型如果是数组
+// [1,2,3,4,5] -> {a:1} 替换
+// [1,2,3,4,5] -> @index=1 更新某一个，应该用arr.1或者when进行过滤 这还是需要看具体的源类型
+// [1,2,3,4,5] -> [5,6] 如果有|merge则合并，否则替换
+// [1,2,3,4,5] -> 1、‘test’、null、undefined 替换
+
+//  {a:1} -> {b:2} 合并
+//  {a:1} -> [1,2] 替换
+//  {a:1} -> 1、’string‘、null、bool 替换
+
+// 基本类型 -> 所有类型 替换
+
+// *** remove
+
 const chain = {
   update(source, str, value) {
-    this.initArgs({ source, str, value });
     this.updateMode = true;
+    this.initArgs({ source, str, value });
     return this;
   },
   remove(source, str, removeFilter) {
@@ -15,11 +33,12 @@ const chain = {
     return this;
   },
   initArgs({ source, str, value, removeFilter }) {
+    this.checkInitArgs({ source, str })
     if (Array.isArray(source)) {
       this.sourceType = 'array';
       this.source = [...source];
       this.result = [...source];
-    } else {
+    } else if(_.isObject(source) && !_.isNull(source)) {
       this.sourceType = 'object';
       this.source = { ...source };
       this.result = { ...source };
@@ -28,6 +47,21 @@ const chain = {
     this.value = value;
     this.removeFilter = removeFilter;
     this.tip = setTimeout(() => warn('是否忘了调用val？'), 0);
+  },
+  checkInitArgs({ source, str }){
+    let goOn = true;
+    if (typeof source !== 'object' || source === null) {
+      goOn = false;
+      warn('第一个参数应为对象或数组');
+    }
+
+    if (typeof str === 'string') {
+      const deepArray = str === '' ? [] : str.split('.');
+      this.deepArray = deepArray;
+    } else {
+      goOn = false;
+      warn('第二个参数应为字符串');
+    }
   },
   when(filter) {
     const type = typeof filter;
@@ -69,28 +103,14 @@ const chain = {
   },
   checkArgs(source, str, value) {
     let goOn = true;
-    if (typeof source !== 'object' || source === null) {
-      goOn = false;
-    }
-
-    if (typeof str === 'string') {
-      const deepArray = str === '' ? [] : str.split('.');
-      this.deepArray = deepArray;
-      // this.lastDeep = deepArray[deepArray.length - 1];
-      // this.targetIsObj = !this.lastDeep.startsWith('@');
-    } else {
-      goOn = false;
-      warn('第二个参数应为字符串');
-    }
-
     if (this.updateMode) {
       // toFn和value参数二选一
       if (this.toFn) {
-        if (value) {
+        if (value !== undefined) {
           goOn = false;
           warn('使用to方法时update不应传第三个参数');
         }
-        // 是否要约定 when 中的父级匹配以$开头？
+        // 约定 when 中的父级匹配以$开头 有可能参数包括最后一个，比如a{$p}.b{$c}, when(p, c)，这时需要判断最后一个是否$开头，有则长度一致
         // const filterLength = _.filter(_.keys(this.filterObj), key => key.startsWith('$')).length;
         // if (filterLength !== this.toFnArgLength - 1) {
         //   goOn = false;
@@ -132,7 +152,7 @@ const chain = {
     let nextResult = [this.result];
     deepArray.forEach((deep) => {
       let temp = [];
-      if (deep.startsWith('@child')) {
+      if (deep.startsWith(CHILD)) {
         nextResult = this.doFilterForWhen(deep, nextResult);
         _.forEach(nextResult, (value, key) => {
           if (Array.isArray(value)) {
@@ -170,8 +190,8 @@ const chain = {
       if (match) {
         const filter = typeof filterObj === 'string' ? filterObj : filterObj[match];
         // 过滤的是对象
-        if (filter['@key']) {
-          finResult = [result[filter['@key']]];
+        if (filter[KEY]) {
+          finResult = [result[filter[KEY]]];
         } else {
           finResult = _.filter(result, filter);
         }
@@ -208,7 +228,7 @@ const chain = {
     let nextResult = [this.result];
     deepArray.forEach((deep) => {
       let temp = [];
-      if (deep.startsWith('@child')) {
+      if (deep.startsWith(CHILD)) {
         // @todo 第一个参数为数组时会有问题
         temp = [...nextResult];
       } else {
