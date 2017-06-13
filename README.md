@@ -1,10 +1,4 @@
-# JQL
-#### JavaScript Query Language 
-
-#### JavaScript查询语言
-
-
-
+# ReUp
 a tool library for operate JavaScript object and array,make it easier to update or remove some part of it.
 
 it will return a new object or array, so you can strictly use return value for reducer.
