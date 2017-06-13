@@ -20,18 +20,18 @@ test('移除obj.love obj.like两个属性', (t) => {
   t.snapshot(result);
 });
 
-test('移除obj.obj_arr里的第4项 ’乱入‘', (t) => {
+test('移除obj.obj_arr里的第4项 problem', (t) => {
   result = fn(getData(), 'obj.obj_arr.3').val();
   t.is(result.obj.obj_arr.length, 3);
-  t.falsy(result.obj.obj_arr.includes('乱入'));
+  t.falsy(result.obj.obj_arr.includes('problem'));
   t.snapshot(result);
 });
 
 // todo 添加toFn ？
-// test('移除obj.obj_arr里的 ’乱入‘', (t) => {
-//   result = fn(getData(), 'obj.obj_arr', '乱入').val();
+// test('移除obj.obj_arr里的 problem', (t) => {
+//   result = fn(getData(), 'obj.obj_arr', 'problem').val();
 //   t.is(result.obj.obj_arr.length, 3);
-//   t.falsy(result.obj.obj_arr.includes('乱入'));
+//   t.falsy(result.obj.obj_arr.includes('problem'));
 //   t.snapshot(result);
 // });
 
@@ -45,7 +45,7 @@ test('移除obj.obj_arr里无匹配的', (t) => {
   result = fn(getData(), 'obj.obj_arr', { isYou: true, notExist: true }).val();
   const length = result.obj.obj_arr.length;
   t.is(length, 4);
-  t.is(result.obj.obj_arr[length - 1], '乱入');
+  t.is(result.obj.obj_arr[length - 1], 'problem');
   t.snapshot(result);
 });
 

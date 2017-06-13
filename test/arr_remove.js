@@ -48,16 +48,18 @@ test('移除arr下age=2对象的hide(无匹配)', (t) => {
   t.snapshot(result);
 });
 
-test('移除arr下所有对象的age和sub属性', (t) => {
+test('移除arr.sub.subArr下所有对象的status属性', (t) => {
   origin = getData();
   origin.forEach(item=>{
-    t.not(item.age, undefined);
-    t.not(item.sub, undefined);
+    item.sub.subArr.forEach(subObj=>{
+      t.not(subObj.status, undefined);
+    })
   })
-  result = fn(origin, '@child.@child', ['age', 'sub']).val();
+  result = fn(origin, '@child.sub.subArr.@child', ['status']).val();
   result.forEach(item=>{
-    t.is(item.age, undefined);
-    t.is(item.sub, undefined);
+    item.sub.subArr.forEach(subObj=>{
+      t.is(subObj.status, undefined);
+    })
   })
   t.snapshot(result);
 });
