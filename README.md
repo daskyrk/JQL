@@ -30,7 +30,7 @@ update(object|array, 'path{@tag}/to/target', targetShape)
 
 ##### testObj：
 
-```json
+```javascript
 const testObj = {
   arr: [
     {
@@ -99,7 +99,7 @@ update(testObj, 'arr.0', 'hello').val()
 
 ##### testArray:
 
-```json
+```javascript
 const testArr = [
   {
     text: 'arr1',
