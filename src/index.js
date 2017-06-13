@@ -20,90 +20,29 @@ const output = (...args) => {
 const getObj = clone(testObj);
 const getArr = clone(testArr);
 
-
 export default (() => {
-  const obj = {
-    params: {
-      id: 1,
-      name: 'hhh',
-      age: 12
-    },
-    args: {
-      proId: 22,
-      region: 'a-b-c',
-      arr: [2, 3]
-    }
-  };
-  const runtimes = [
-    {
-      id: 555,
-      runtimeList: [
-        { id: 12, name: 'wtf' },
-        { id: 13, name: 'qwe' },
-        { id: 14, name: 'asd' }
-      ]
-    },
-    {
-      id: 666,
-      runtimeList: [
-        { id: 22, name: 'wtf2' },
-        { id: 23, name: 'qwe2' },
-        { id: 24, name: 'asd2' }
-      ]
-    }
-  ];
-  const statusMap = {
-    zookeeper: [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_zookeeper.eb0c4462-4a78-11e7-99ca-70b3d5800001',
-        status: 'TASK_RUNNING'
-      }
-    ],
-    mysql: [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_mysql.eb0c6b74-4a78-11e7-99ca-70b3d5800001',
-        status: 'TASK_RUNNING'
-      }
-    ],
-    'blog-web': [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_blog-web.1beec367-4a79-11e7-99ca-70b3d5800001',
-        status: 'TASK_RUNNING',
-        extra: true
-      }
-    ],
-    'blog-service': [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_blog-service.11f22734-4a79-11e7-99ca-70b3d5800001',
-        status: 'TASK_RUNNING'
-      }
-    ],
-    'user-service': [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_user-service.08f87c10-4a79-11e7-99ca-70b3d5800001',
-        status: 'TASK_STAGING'
-      }
-    ],
-    'showcase-front': [
-      {
-        id:
-          'open-source_pampas-blog_test_develop_showcase-front.29e6a91d-4a79-11e7-99ca-70b3d5800001',
-        status: 'TASK_RUNNING'
-      }
-    ]
-  };
   let result = null;
 
-  // result = remove(getFuzaArr(), '@child.sub', { extra: false }).val();
-  result = update(getObj(), 'arr.0', 'hello').val();
-  // result = remove(getFuzaArr(), '', 'hide').val();
-  // result = update(getFuzaArr(), '@child.sub{$p}.subArr', [6]).when((ps, childs)=>{
-  //   debugger;
+  // todo: 分离when的参数和toFnArgArr的依赖，不使用when时也有toFnArgArr
+  // result = remove(getArr(), '@child{$p}.sub').when({extra: true}).to((ps, targets)=>{
+  //   debugger
+  //   ps.forEach(p=>{
+  //     if (p.extra === false) {
+  //       _.pull(ps, p);
+  //     };
+  //   })
+  // }).val();
+  // result = remove(getArr(), '@child{$p}.sub').when((ps, childs)=>{
+  //   // console.log("ps, childs:",ps, childs);
+  //   // return childs.map(child=>{
+  //   //   return child.hide !== undefined;
+  //   // })
+  // debugger;
+  // let tr  = _.filter(childs, (child=>{return child.extra}));
+  // console.log("after:",tr);
+  //   return {
+  //     targets: tr
+  //   }
   // }).val();
   output('rs1 result :', result);
 

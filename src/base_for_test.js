@@ -104,7 +104,7 @@ export const testArr = [
         },
         {
           subText: 'sub3',
-          status: 'run',
+          status: 'stop',
         },
       ],
     },

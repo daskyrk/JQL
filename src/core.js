@@ -88,19 +88,6 @@ const chain = {
       case 'function':
         this.filterFn = filter;
         this.filterFnArgArr = [];
-        // const pathFilterArr = [];
-        // this.pathArray.forEach(({filter}) => {
-        //   const match = path.match(/\{(.+)\}/);
-        //   if (filter) {
-        //     pathFilterArr.push(match[1]);
-        //     // remove {$tag}
-        //     path = path.slice(0, -match.length - 2);
-        //   }
-        // });
-        // if (filter.length !== pathFilterArr.length + 1) {
-        //   warn('when的参数和路径中的数量不匹配');
-        // }
-        // this.pathFilterArr = pathFilterArr;
         break;
       default:
         warn('条件应为对象或方法');
@@ -232,14 +219,15 @@ const chain = {
     return result;
   },
   doUpdate(targets, value) {
+    // 用移除了$tag的filter对象对目标集合做最后过滤
     if (this.filterObj) {
       targets = _.filter(targets, this.filterObj);
     }
     console.log('目标是:', targets);
-    if (this.filterFn) {
-      this.filterFnArgArr.push(targets);
-      this.filterFn.apply(this, this.filterFnArgArr);
-    }
+    // if (this.filterFn) {
+    //   this.filterFnArgArr.push(targets);
+    //   this.filterFn.apply(this, this.filterFnArgArr);
+    // }
     if (this.toFn) {
       this.toFnArgArr.push(targets);
       this.toFn.apply(this, this.toFnArgArr);
@@ -255,26 +243,64 @@ const chain = {
   },
   getRemoveTargets() {
     const pathArray = this.pathArray;
-    let targetArr = [];
     let nextResult = [this.result];
     pathArray.forEach(({wantChildren, path, tag}) => {
       let temp = [];
+      if (tag) {
+        nextResult = this.filterWithTag(tag, nextResult);
+      };
       if (wantChildren) {
-        // @todo 第一个参数为数组时会有问题
-        // nextResult = this.doFilterForWhen(path, nextResult);
-        temp = [...nextResult];
+        _.forEach(nextResult, (value, key) => {
+          if (Array.isArray(value)) {
+            temp = temp.concat(value);
+          } else {
+            temp.push(value);
+          }
+        });
       } else {
         temp = nextResult.map(result => this.getDeep(result, path));
       }
       nextResult = temp;
     });
-    targetArr = nextResult;
-    return targetArr;
+    return nextResult;
   },
   doRemove(targets, removeFilter) {
+    // 用移除了$tag的filter对象对目标集合做最后过滤
+    if (this.filterObj) {
+      targets = _.filter(targets, this.filterObj);
+    }
     if (this.filterFn) {
       this.filterFnArgArr.push(targets);
-      this.filterFn.apply(this, this.filterFnArgArr);
+      // 每次有一个参数可用：用户需要写if判断，根据父级判断子级时无法实现
+      // this.filterFnArgArr.forEach((arg, i)=>{
+      //   // let index = Math.max(i-1, 0);
+      //   let tempArg = Array(i+1);
+      //   tempArg[i] = arg;
+      //   debugger;
+      //   _.filter(arg, this.filterFn.bind(this, tempArg));
+      // })
+
+      // 把所有参数一次传入，返回一个对象，key->要更新的目标：这种需要对应key到path筛选的数组上
+      // 但是用when来做移除操作很奇怪，判断和移除可以分离吗？ 复杂操作还是用toFn吧
+      // let res = this.filterFn.apply(this, this.filterFnArgArr);
+      // let pathFilters = [];
+      // _.forEach(this.pathArray, (path)=>path.tag && pathFilters.push(path.tag));
+      // _.forEach(res, (value, key)=>{
+      //   if (key === 'targets') {
+      //     debugger
+      //     value.forEach(remove=>{
+      //       _.pull(this.filterFnArgArr[this.filterFnArgArr.length-1],remove);
+      //     })
+      //   };
+      //   if (pathFilters.includes[key]) {
+      //     console.log("get:");
+      //   };
+      // })
+      // console.log("res:",res);
+    }
+    if (this.toFn) {
+      this.toFnArgArr.push(targets);
+      this.toFn.apply(this, this.toFnArgArr);
     }
     if (removeFilter) {
       const removeAttr = Array.isArray(removeFilter);
