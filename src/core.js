@@ -111,7 +111,7 @@ const chain = {
     if (this.updateMode) {
       this.doUpdate(this.getTargets(), this.value);
     } else {
-      this.doRemove(this.getRemoveTargets(), this.removeFilter);
+      this.doRemove(this.getTargets(), this.removeFilter);
     }
     return this.result;
   },
@@ -152,7 +152,6 @@ const chain = {
   // 更新时需要找到外层的对象，再更新其某个属性
   getTargets() {
     const pathArray = this.pathArray;
-    let targetArr = [];
     let nextResult = [this.result];
     // 根据每一节路径筛选
     pathArray.forEach((pathObj) => {
@@ -177,8 +176,7 @@ const chain = {
       nextResult = temp;
       pathObj.result = nextResult;
     });
-    targetArr = nextResult;
-    return targetArr;
+    return nextResult;
   },
   getDeep(target, attr) {
     if (target[attr] !== undefined) {
@@ -243,31 +241,6 @@ const chain = {
       this.toFnArgArr.push(targets);
       this.toFn(...this.toFnArgArr);
     }
-  },
-  getRemoveTargets() {
-    const pathArray = this.pathArray;
-    let nextResult = [this.result];
-    pathArray.forEach((pathObj) => {
-      const { wantChildren, path, tag } = pathObj;
-      let temp = [];
-      if (tag) {
-        nextResult = this.filterWithTag(tag, nextResult);
-      }
-      if (wantChildren) {
-        _.forEach(nextResult, (value) => {
-          if (Array.isArray(value)) {
-            temp = temp.concat(value);
-          } else {
-            temp.push(value);
-          }
-        });
-      } else {
-        temp = nextResult.map(result => this.getDeep(result, path));
-      }
-      nextResult = temp;
-      pathObj.result = nextResult;
-    });
-    return nextResult;
   },
   doRemove(targets, removeFilter) {
     // 用移除了$tag的filter对象对目标集合做最后过滤
