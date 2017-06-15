@@ -10,6 +10,7 @@ it will return a new object or array, so you can strictly use return value for r
 
 [![build status](https://travis-ci.org/daskyrk/ReUp.svg?branch=master)](https://travis-ci.org/daskyrk/ReUp)
 [![Code Climate](https://codeclimate.com/github/daskyrk/ReUp/badges/gpa.svg)](https://codeclimate.com/github/daskyrk/ReUp)
+[![Issue Count](https://codeclimate.com/github/daskyrk/ReUp/badges/issue_count.svg)](https://codeclimate.com/github/daskyrk/ReUp)
 [![Join the chat at https://gitter.im/daskyrk/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/daskyrk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 #### Usage

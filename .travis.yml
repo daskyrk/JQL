@@ -7,10 +7,10 @@ branches:
 
 env:
   global:
-    - CC_TEST_REPORTER_ID=a5f80983ac2e763801507502055a928d06ddd84b53e6dfb9ee454ab4b2e3a401
-    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+    # - CC_TEST_REPORTER_ID=a5f80983ac2e763801507502055a928d06ddd84b53e6dfb9ee454ab4b2e3a401
+    # - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 
 before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
+  # - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  # - chmod +x ./cc-test-reporter
 
