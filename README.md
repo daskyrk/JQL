@@ -13,9 +13,10 @@ it will return a new object or array, so you can strictly use return value for r
 [![Issue Count](https://codeclimate.com/github/daskyrk/ReUp/badges/issue_count.svg)](https://codeclimate.com/github/daskyrk/ReUp)
 [![Join the chat at https://gitter.im/daskyrk/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/daskyrk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-#### Usage
+---
+### Usage
 
-##### update grammar：
+#### update grammar：
 
 ```javascript
 update(object|array, 'path{@tag}/to/target', targetShape)
@@ -86,7 +87,7 @@ update(testObj, 'arr.0.sub', { name: 'hello' }).val();
 ```javascript
 // update all children's age to 'hello' of testObj.arr which text='arr2'
 // arr下text=arr2的对象age都改为hello
-update(testObj, 'arr.@child', { age: 'hello' }).when({ text: 'arr2' }).val()
+update(testObj, 'arr.*', { age: 'hello' }).when({ text: 'arr2' }).val()
 ```
 
 ```javascript
@@ -183,7 +184,7 @@ update(testArr, '1', { age: 222 }).val();
 ```javascript
 // update some itme's status to 'done' in subArr by multi level filter
 // arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改为done
-update(testArr, '@child{$parent}.sub.subArr.@child{$sub}', { status: 'done' })
+update(testArr, '*{$parent}.sub.subArr.*{$sub}', { status: 'done' })
   .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
   .val();
 ```
@@ -191,7 +192,7 @@ update(testArr, '@child{$parent}.sub.subArr.@child{$sub}', { status: 'done' })
 ```javascript
 // same to prev demo but use `to` function
 // 效果同上一个例子但使用to方法
-update(testArr, '@child{$parent}.sub.subArr.@child{$sub}')
+update(testArr, '*{$parent}.sub.subArr.*{$sub}')
   .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
   .to((parents, subs) => {
     subs.forEach((sub) => {
@@ -203,7 +204,7 @@ update(testArr, '@child{$parent}.sub.subArr.@child{$sub}')
 ```javascript
 // update sub obj when parent.age is 3
 // arr中age为3的对象下的sub.extra改为false，subArr长度改为1
-update(testArr, '@child{$parent}.sub')
+update(testArr, '*{$parent}.sub')
   .when({ $parent: { age: 3 } })
   .to((parents, subs) => {
     subs.forEach((sub) => {
@@ -216,7 +217,7 @@ update(testArr, '@child{$parent}.sub')
 ```javascript
 // remove 6 from arr includes 5 and parent.hide is not undefined
 // 有hide属性的arr中包含5的数组移除6
-update(testArr, '@child{$parent}.arr.@child')
+update(testArr, '*{$parent}.arr.*')
   .when({ $parent: 'hide' })
   .to((parent, arrs) => {
   arrs.forEach((arr) => {
@@ -227,9 +228,8 @@ update(testArr, '@child{$parent}.arr.@child')
 }).val();
 ```
 
----
 
-##### remove grammar：
+#### remove grammar：
 
 ```javascript
 remove(object|array, 'path{@tag}/to/target', removeFilter)
@@ -254,13 +254,13 @@ remove(testArr, '', { hide: '2333' }).val();
 ```javascript
 // remove all item's hide attribute in testArr
 // 移除arr下所有对象的hide属性
-remove(testArr, '@child', ['hide']).when({ age: 3 }).val();
+remove(testArr, '*', ['hide']).when({ age: 3 }).val();
 ```
 
 ```javascript
 // remove all item's status attribute in all subArr
 // 移除arr.sub.subArr下所有对象的status属性
-remove(testArr, '@child.sub.subArr.@child', ['status']).val();
+remove(testArr, '*.sub.subArr.*', ['status']).val();
 ```
 
 ##### demos(object):
@@ -288,6 +288,7 @@ remove(testObj, 'obj.obj_arr', { isYou: true }).val();
 **please see test cases for more demo usage**
 
 
+---
 
 #### Todo：
 
