@@ -8,6 +8,8 @@ it will return a new object or array, so you can strictly use return value for r
 返回值是全新的对象，所以可以直接用于类似于redux等库的reducer中。
 
 
+[![build status](https://travis-ci.org/daskyrk/ReUp.svg?branch=master)](https://travis-ci.org/daskyrk/ReUp)
+
 
 #### Usage
 
@@ -76,7 +78,7 @@ update(testObj, 'arr.0', { add: 'hello' }).val();
 ```javascript
 // update testObj.arr[0].sub.name to 'hello'
 // arr属性下第一个sub.name改为hello
-update(testObj, 'arr.0.sub', { name: 'hello' }).val(); 
+update(testObj, 'arr.0.sub', { name: 'hello' }).val();
 ```
 
 ```javascript
