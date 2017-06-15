@@ -27,7 +27,7 @@ test('移除arr中hide属性为2333的项', (t) => {
 test('移除arr下所有对象的hide', (t) => {
   origin = getData();
   t.is(origin[2].hide, '2333');
-  result = fn(origin, '@child', ['hide']).val();
+  result = fn(origin, '*', ['hide']).val();
   t.is(result[2].hide, undefined);
   t.snapshot(result);
 });
@@ -35,7 +35,7 @@ test('移除arr下所有对象的hide', (t) => {
 test('移除arr下age=3对象的hide', (t) => {
   origin = getData();
   t.is(origin[2].hide, '2333');
-  result = fn(origin, '@child', ['hide']).when({ age: 3 }).val();
+  result = fn(origin, '*', ['hide']).when({ age: 3 }).val();
   t.is(result[2].hide, undefined);
   t.snapshot(result);
 });
@@ -43,7 +43,7 @@ test('移除arr下age=3对象的hide', (t) => {
 test('移除arr下age=2对象的hide(无匹配)', (t) => {
   origin = getData();
   t.is(origin[2].hide, '2333');
-  result = fn(origin, '@child', ['hide']).when({ age: 2 }).val();
+  result = fn(origin, '*', ['hide']).when({ age: 2 }).val();
   t.is(result[2].hide, '2333');
   t.snapshot(result);
 });
@@ -55,7 +55,7 @@ test('移除arr.sub.subArr下所有对象的status属性', (t) => {
       t.not(subObj.status, undefined);
     })
   })
-  result = fn(origin, '@child.sub.subArr.@child', ['status']).val();
+  result = fn(origin, '*.sub.subArr.*', ['status']).val();
   result.forEach(item=>{
     item.sub.subArr.forEach(subObj=>{
       t.is(subObj.status, undefined);
@@ -68,7 +68,7 @@ test('移除arr.sub.subArr下所有对象的status属性', (t) => {
 // test('移除arr中sub.extra为false的项', (t) => {
 //   origin = getData();
 //   t.is(origin.length, 3);
-//   result = fn(origin, '@child{$p}.sub', { extra: false }).to((ps, targets)=>{
+//   result = fn(origin, '*{$p}.sub', { extra: false }).to((ps, targets)=>{
 //     ps.forEach(p=>{
 //       if (p.sub.extra === false) {
 //         _.pull(ps, p);

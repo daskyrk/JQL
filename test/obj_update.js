@@ -28,7 +28,7 @@ test('arr下所有的sub name都改为hello', (t) => {
   origin.arr.forEach(({ sub }) => {
     t.not(sub.name, 'hello');
   });
-  result = fn(origin, 'arr.@child.sub', { name: 'hello' }).val();
+  result = fn(origin, 'arr.*.sub', { name: 'hello' }).val();
   result.arr.forEach(({ sub }) => {
     t.is(sub.name, 'hello');
   });
@@ -40,7 +40,7 @@ test('arr下extra=true的sub name都改为hello', (t) => {
   origin.arr.forEach(({ sub }) => {
     t.not(sub.name, 'hello');
   });
-  result = fn(origin, 'arr.@child.sub', { name: 'hello' }).when({ extra: true }).val();
+  result = fn(origin, 'arr.*.sub', { name: 'hello' }).when({ extra: true }).val();
   result.arr.forEach(({ sub }) => {
     if (sub.extra) {
       t.is(sub.name, 'hello');
@@ -66,7 +66,7 @@ test('arr下text=arr2的对象age都改为hello', (t) => {
       t.not(item.age, 'hello');
     }
   });
-  result = fn(origin, 'arr.@child', { age: 'hello' }).when({ text: 'arr2' }).val();
+  result = fn(origin, 'arr.*', { age: 'hello' }).when({ text: 'arr2' }).val();
   result.arr.forEach((item) => {
     if (item.text === 'arr2') {
       t.is(item.age, 'hello');

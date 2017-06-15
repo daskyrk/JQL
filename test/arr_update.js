@@ -14,7 +14,7 @@ test('arr中第二个对象age改为222', (t) => {
 });
 
 test('arr中text为arr3的对象下的sub.name改为hi', (t) => {
-  result = fn(getData(), '@child{$parent}.sub', { name: 'hi' })
+  result = fn(getData(), '*{$parent}.sub', { name: 'hi' })
           .when({ $parent: { text: 'arr3' } })
           .val();
   _.filter(result, { text: 'arr3' }).forEach((item) => {
@@ -24,7 +24,7 @@ test('arr中text为arr3的对象下的sub.name改为hi', (t) => {
 });
 
 test('arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改为done', (t) => {
-  result = fn(getData(), '@child{$parent}.sub.subArr.@child{$sub}', { status: 'done' })
+  result = fn(getData(), '*{$parent}.sub.subArr.*{$sub}', { status: 'done' })
           .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
           .val();
   const parents = _.filter(result, { text: 'arr2' });
@@ -38,7 +38,7 @@ test('arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改�
 });
 
 test('arr中text为arr2的对象下sub.subArr中subText=sub1对象的status改为failed 使用to方法', (t) => {
-  result = fn(getData(), '@child{$parent}.sub.subArr.@child{$sub}')
+  result = fn(getData(), '*{$parent}.sub.subArr.*{$sub}')
           .when({ $parent: { text: 'arr2' }, $sub: { subText: 'sub1' } })
           .to((parents, subs) => {
             subs.forEach((sub) => {
@@ -63,7 +63,7 @@ test('arr中age为3的对象下的sub.extra改为false，subArr长度改为1', (
     t.true(p.sub.extra);
     t.is(p.sub.subArr.length, 3);
   });
-  result = fn(origin, '@child{$parent}.sub')
+  result = fn(origin, '*{$parent}.sub')
           .when({ $parent: { age: 3 } })
           .to((parents, subs) => {
             subs.forEach((sub) => {
@@ -93,7 +93,7 @@ test('所有arr中包含5的数组移除6', (t) => {
     t.truthy(arr.includes(6));
     t.is(arr.toString(), '4,5,6');
   });
-  result = fn(origin, '@child.arr.@child')
+  result = fn(origin, '*.arr.*')
           .to((arrs) => {
             arrs.forEach((arr) => {
               if (arr.includes(5)) {
@@ -134,7 +134,7 @@ test('有hide属性的arr中包含5的数组移除6', (t) => {
     t.is(arr.toString(), '4,5,6');
   });
   t.is(notChange.arr[1].toString(), '4,5,6');
-  result = fn(origin, '@child{$parent}.arr.@child')
+  result = fn(origin, '*{$parent}.arr.*')
           .when({ $parent: 'hide' })
           .to((parent, arrs) => {
             arrs.forEach((arr) => {

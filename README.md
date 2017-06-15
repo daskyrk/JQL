@@ -9,7 +9,7 @@ it will return a new object or array, so you can strictly use return value for r
 
 
 [![build status](https://travis-ci.org/daskyrk/ReUp.svg?branch=master)](https://travis-ci.org/daskyrk/ReUp)
-
+[![Code Climate](https://codeclimate.com/github/daskyrk/ReUp/badges/gpa.svg)](https://codeclimate.com/github/daskyrk/ReUp)
 
 #### Usage
 

@@ -1,5 +1,5 @@
-import chain from './core';
 import _ from 'lodash';
+import chain from './core';
 
 export const testObj = {
   arr: [

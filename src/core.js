@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const CHILD = '@child';
+const CHILD = '*';
 const KEY = '@KEY';
 
 const logFn = tip => console.log.apply(console, [`%c ${tip}`, 'color: red']);
@@ -157,11 +157,12 @@ const chain = {
     let targetArr = [];
     let nextResult = [this.result];
     // 根据每一节路径筛选
-    pathArray.forEach(({wantChildren, path, tag}, i) => {
+    pathArray.forEach((pathObj) => {
+      const { wantChildren, path, tag } = pathObj;
       let temp = [];
       if (tag) {
         nextResult = this.filterWithTag(tag, nextResult);
-      };
+      }
       if (wantChildren) {
         _.forEach(nextResult, (value, key) => {
           if (Array.isArray(value)) {
@@ -175,7 +176,7 @@ const chain = {
       } else {
         temp.push(this.getDeep(nextResult, path));
       }
-      nextResult = temp;
+      pathObj.result = nextResult = temp;
     });
     targetArr = nextResult;
     return targetArr;
@@ -236,7 +237,7 @@ const chain = {
     targets.forEach((item) => {
       if (this.valueIsObj) {
         Object.assign(item, value);
-      } else if (!this.toFn) { // 没有toFn时才直接赋值，否则会把@child属性放上去
+      } else if (!this.toFn) { // 没有toFn时才直接赋值，否则会把*属性放上去
         item[this.lastPath] = value;
       }
     });
@@ -244,11 +245,12 @@ const chain = {
   getRemoveTargets() {
     const pathArray = this.pathArray;
     let nextResult = [this.result];
-    pathArray.forEach(({wantChildren, path, tag}) => {
+    pathArray.forEach((pathObj) => {
+      const { wantChildren, path, tag } = pathObj;
       let temp = [];
       if (tag) {
         nextResult = this.filterWithTag(tag, nextResult);
-      };
+      }
       if (wantChildren) {
         _.forEach(nextResult, (value, key) => {
           if (Array.isArray(value)) {
@@ -260,7 +262,7 @@ const chain = {
       } else {
         temp = nextResult.map(result => this.getDeep(result, path));
       }
-      nextResult = temp;
+      pathObj.result = nextResult = temp;
     });
     return nextResult;
   },

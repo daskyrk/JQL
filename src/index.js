@@ -23,8 +23,8 @@ const getArr = clone(testArr);
 export default (() => {
   let result = null;
 
-  // todo: 分离when的参数和toFnArgArr的依赖，不使用when时也有toFnArgArr
-  // result = remove(getArr(), '@child{$p}.sub').when({extra: true}).to((ps, targets)=>{
+  // todo: 分离when的参数和toFnArgArr的依赖，不使用when时也有toFnArgArr  .when({extra: true})
+  // result = remove(getArr(), '@child{$p}.sub').to((ps, targets)=>{
   //   debugger
   //   ps.forEach(p=>{
   //     if (p.extra === false) {
