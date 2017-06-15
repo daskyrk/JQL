@@ -1,15 +1,16 @@
 {
-  "name": "jql",
+  "name": "ReUp",
   "version": "0.0.1",
-  "description": "javascript query language",
+  "description": "javascript object update tool",
   "main": "index.js",
   "scripts": {
-    "watch": "rm -rf dist && webpack --progress --color -w -d",
+    "watch": "rm -rf build && webpack --progress --color -w -d",
+    "build": "rm -rf build && NODE_ENV=production webpack --progress --color -p --config webpack.production.config.js",
     "test": "rm -rf test/__snapshots__ && ava"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daskyrk/JQL.git"
+    "url": "git+https://github.com/daskyrk/ReUp.git"
   },
   "keywords": [
     "javascript",
@@ -40,7 +41,7 @@
     "babel": "inherit"
   },
   "bugs": {
-    "url": "https://github.com/daskyrk/JQL/issues"
+    "url": "https://github.com/daskyrk/ReUp/issues"
   },
-  "homepage": "https://github.com/daskyrk/JQL#readme"
+  "homepage": "https://github.com/daskyrk/ReUp#readme"
 }
