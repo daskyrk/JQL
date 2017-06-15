@@ -1,20 +1,19 @@
-const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   devtool: 'source-map',
   entry: ['./src/index.js'],
   output: {
-    path: __dirname + '/build',
+    path: path.resolve('./build'),
     filename: 'bundle.js',
   },
   module: {
     rules: [
-      { test: /\.js?$/, loaders: ['babel-loader'] }
+      { test: /\.js?$/, loaders: ['babel-loader'] },
     ],
   },
   resolve: {
     alias: {
-      '_': 'lodash',
-    }
+    },
   },
 };

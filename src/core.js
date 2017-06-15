@@ -50,7 +50,7 @@ const chain = {
   },
   initPathArray(str) {
     const paths = str === '' ? [] : str.split('.');
-    this.pathArray = paths.map((path, i) => {
+    this.pathArray = paths.map((path) => {
       const item = {
         path,
         origin: path,
@@ -139,10 +139,8 @@ const chain = {
           this.lastPath = this.pathArray.splice(-1)[0].path;
         }
       }
-    } else {
-      if (this.removeFilter === undefined) {
-        this.lastPath = this.pathArray.splice(-1)[0].path;
-      }
+    } else if (this.removeFilter === undefined) {
+      this.lastPath = this.pathArray.splice(-1)[0].path;
       // if (!this.pathArray.length && !this.lastPath) {
       //   warn('remove的后两个参数不能都为空');
       // };
@@ -164,7 +162,7 @@ const chain = {
         nextResult = this.filterWithTag(tag, nextResult);
       }
       if (wantChildren) {
-        _.forEach(nextResult, (value, key) => {
+        _.forEach(nextResult, (value) => {
           if (Array.isArray(value)) {
             temp = temp.concat(value);
           } else {
@@ -176,17 +174,18 @@ const chain = {
       } else {
         temp.push(this.getDeep(nextResult, path));
       }
-      pathObj.result = nextResult = temp;
+      nextResult = temp;
+      pathObj.result = nextResult;
     });
     targetArr = nextResult;
     return targetArr;
   },
   getDeep(target, attr) {
     if (target[attr] !== undefined) {
-      return target[attr];
+      warn(`对象${JSON.stringify(target)}的${attr}属性不存在`);
+      this.stop();
     }
-    warn(`对象${JSON.stringify(target)}的${attr}属性不存在`);
-    this.stop();
+    return target[attr];
   },
   filterWithObj(filterObj, tag, nextResult) {
     let finResult = nextResult;
@@ -229,10 +228,7 @@ const chain = {
     //   this.filterFnArgArr.push(targets);
     //   this.filterFn.apply(this, this.filterFnArgArr);
     // }
-    if (this.toFn) {
-      this.toFnArgArr.push(targets);
-      this.toFn.apply(this, this.toFnArgArr);
-    }
+    this.execToFn(targets);
 
     targets.forEach((item) => {
       if (this.valueIsObj) {
@@ -241,6 +237,12 @@ const chain = {
         item[this.lastPath] = value;
       }
     });
+  },
+  execToFn(targets) {
+    if (this.toFn) {
+      this.toFnArgArr.push(targets);
+      this.toFn(...this.toFnArgArr);
+    }
   },
   getRemoveTargets() {
     const pathArray = this.pathArray;
@@ -252,7 +254,7 @@ const chain = {
         nextResult = this.filterWithTag(tag, nextResult);
       }
       if (wantChildren) {
-        _.forEach(nextResult, (value, key) => {
+        _.forEach(nextResult, (value) => {
           if (Array.isArray(value)) {
             temp = temp.concat(value);
           } else {
@@ -262,7 +264,8 @@ const chain = {
       } else {
         temp = nextResult.map(result => this.getDeep(result, path));
       }
-      pathObj.result = nextResult = temp;
+      nextResult = temp;
+      pathObj.result = nextResult;
     });
     return nextResult;
   },
@@ -300,10 +303,8 @@ const chain = {
       // })
       // console.log("res:",res);
     }
-    if (this.toFn) {
-      this.toFnArgArr.push(targets);
-      this.toFn.apply(this, this.toFnArgArr);
-    }
+    this.execToFn(targets);
+
     if (removeFilter) {
       const removeAttr = Array.isArray(removeFilter);
       targets.forEach((target) => {

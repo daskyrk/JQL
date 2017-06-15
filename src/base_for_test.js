@@ -113,9 +113,7 @@ export const testArr = [
   },
 ];
 
-export const clone = (source) => () =>{
-  return _.cloneDeep(source);
-}
+export const clone = source => () => _.cloneDeep(source);
 
 export function update(...args) {
   const chainCopy = { ...chain };

@@ -3,18 +3,17 @@ const webpack = require('webpack');
 module.exports = {
   entry: ['./src/index.js'],
   output: {
-    path: __dirname + '/build',
+    path: path.resolve('./build'),
     filename: 'bundle.[chunkhash].js',
   },
   module: {
     rules: [
-      { test: /\.js?$/, loaders: ['babel-loader'] }
+      { test: /\.js?$/, loaders: ['babel-loader'] },
     ],
   },
   resolve: {
     alias: {
-      '_': 'lodash',
-    }
+    },
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
@@ -23,7 +22,7 @@ module.exports = {
       },
       comments: false,
       sourceMap: false,
-      mangle: true
+      mangle: true,
     }),
     new webpack.DefinePlugin({
       'process.env': {
