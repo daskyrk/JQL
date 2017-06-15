@@ -1,4 +1,4 @@
-// import _ from 'lodash';
+import _ from 'lodash';
 // import chain from './core';
 import { testArr, testObj, clone, update, remove } from './base_for_test';
 
@@ -44,5 +44,4 @@ export default (() => {
   //   }
   // }).val();
   output('rs1 result :', result);
-
 })();
