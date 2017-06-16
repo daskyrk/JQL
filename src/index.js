@@ -9,7 +9,7 @@ const output = (...args) => {
     if (typeof arg === 'string') {
       str += `<h3>${arg}</h3>`;
     } else {
-      str += JSON.stringify(arg);
+      str += `<pre>${JSON.stringify(arg, null, 2)}</pre>`;
     }
     str += '<br/>';
   });

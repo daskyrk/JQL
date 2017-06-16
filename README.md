@@ -288,11 +288,5 @@ remove(testObj, 'obj.obj_arr', { isYou: true }).val();
 **please see test cases for more demo usage**
 
 
----
 
-### Todo：
-
-- [ ] 增加remove时的toFn，方便实现父子级依赖判断时的操作
-- [ ] 梳理api，调整优化部分逻辑
-- [ ] 考虑是否增加select？
-- [ ] 覆盖其他还没测试到的地方
+### [todos & compare with updeep](https://github.com/daskyrk/ReUp/blob/master/todo.md)
