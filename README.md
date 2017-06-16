@@ -1,9 +1,9 @@
 # ReUp
-a tool library for operate JavaScript object and array,make it easier to update or remove some part of it.
+a tool library for operate deeply nested objects/arrays, make it easier to update or remove some part of it.
 
 it will return a new object or array, so you can strictly use return value for reducer.
 
-一个操作更新数组和对象的工具库，通过简洁的语法实现对复杂嵌套的对象和数组更方便的更新或移除操作。
+一个操作更新数组和对象的工具库，通过简洁的语法实现对复杂嵌套对象和数组更方便的更新或移除操作。
 
 返回值是全新的对象，所以可以直接用于类似于redux等库的reducer中。
 
@@ -14,9 +14,9 @@ it will return a new object or array, so you can strictly use return value for r
 [![Join the chat at https://gitter.im/daskyrk/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/daskyrk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ---
-### Usage
+## Usage
 
-#### update grammar：
+### update grammar：
 
 ```javascript
 update(object|array, 'path{@tag}/to/target', targetShape)
@@ -229,7 +229,7 @@ update(testArr, '*{$parent}.arr.*')
 ```
 
 
-#### remove grammar：
+### remove grammar：
 
 ```javascript
 remove(object|array, 'path{@tag}/to/target', removeFilter)
@@ -290,7 +290,7 @@ remove(testObj, 'obj.obj_arr', { isYou: true }).val();
 
 ---
 
-#### Todo：
+### Todo：
 
 - [ ] 增加remove时的toFn，方便实现父子级依赖判断时的操作
 - [ ] 梳理api，调整优化部分逻辑

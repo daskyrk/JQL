@@ -1,5 +1,4 @@
 import _ from 'lodash';
-// import chain from './core';
 import { testArr, testObj, clone, update, remove } from './base_for_test';
 
 const div = document.querySelector('#output');
@@ -17,21 +16,22 @@ const output = (...args) => {
   div.innerHTML = str;
 };
 
-// const getObj = clone(testObj);
+const getObj = clone(testObj);
 const getArr = clone(testArr);
 
 export default (() => {
   let result = null;
 
   // todo: 分离when的参数和toFnArgArr的依赖，不使用when时也有toFnArgArr  .when({extra: true})
-  result = remove(getArr(), '@child{$p}.sub').to((ps, targets) => {
+  result = update(getObj(), 'base', 'hello').val();
+  result = remove(getArr(), '*{$p}.sub').to((ps) => {
     ps.forEach((p) => {
       if (p.extra === false) {
         _.pull(ps, p);
       }
     });
   }).val();
-  // result = remove(getArr(), '@child{$p}.sub').when((ps, childs)=>{
+  // result = remove(getArr(), '*{$p}.sub').when((ps, childs)=>{
   //   // console.log("ps, childs:",ps, childs);
   //   // return childs.map(child=>{
   //   //   return child.hide !== undefined;

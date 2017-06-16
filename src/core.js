@@ -179,7 +179,7 @@ const chain = {
     return nextResult;
   },
   getDeep(target, attr) {
-    if (target[attr] !== undefined) {
+    if (target[attr] === undefined) {
       warn(`对象${JSON.stringify(target)}的${attr}属性不存在`);
       this.stop();
     }
